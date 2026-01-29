@@ -11,6 +11,7 @@ import java.util.List;
 @Entity
 //Entity deve ter construtor sem argumentos public/protected
 @NoArgsConstructor
+@Table(name = "users")
 public class User {
     @Id // Define PK
     @GeneratedValue(strategy = GenerationType.SEQUENCE) // Define geração da PK
@@ -27,16 +28,23 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false, columnDefinition = "DEFAULT true")
+    @Column(nullable = false)
     @NotNull
     private boolean enabled;
 
+    @Enumerated(EnumType.STRING) // Persiste String não números
     @NotBlank
-    private List<Role> roles;
+    private Role roles;
 
     @Column(nullable = false)
     private Instant createdAt;
 
     @OneToMany(mappedBy = "owner") // LAZY por default
     private List<Task> tasks;
+
+    @PrePersist
+    private void prePersist() {
+        this.createdAt = Instant.now();
+        this.enabled = true;
+    }
 }
