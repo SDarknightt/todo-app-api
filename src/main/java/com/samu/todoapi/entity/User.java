@@ -3,14 +3,17 @@ package com.samu.todoapi.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.List;
 
+@Getter
+@Builder
 @Entity
 //Entity deve ter construtor sem argumentos public/protected
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "users")
 public class User {
     @Id // Define PK
@@ -32,9 +35,10 @@ public class User {
     @NotNull
     private boolean enabled;
 
+    @Setter(AccessLevel.NONE) // Avoid setter for role
     @Enumerated(EnumType.STRING) // Persiste String não números
-    @NotBlank
-    private Role roles;
+    @Column(nullable = false)
+    private Role role = Role.USER;
 
     @Column(nullable = false)
     private Instant createdAt;
@@ -46,5 +50,6 @@ public class User {
     private void prePersist() {
         this.createdAt = Instant.now();
         this.enabled = true;
+        this.role = Role.USER;
     }
 }
