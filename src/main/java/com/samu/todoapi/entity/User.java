@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.util.List;
 
 @Getter
+@Setter
 @Builder
 @Entity
 //Entity deve ter construtor sem argumentos public/protected
