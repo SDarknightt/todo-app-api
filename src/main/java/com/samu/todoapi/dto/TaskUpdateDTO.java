@@ -13,7 +13,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @Builder
-public class TaskCreateDTO {
+public class TaskUpdateDTO {
+    @NotNull
     private Long id;
     @NotBlank
     private String title;

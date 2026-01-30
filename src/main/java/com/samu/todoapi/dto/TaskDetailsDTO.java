@@ -14,13 +14,12 @@ import lombok.Setter;
 public class TaskDetailsDTO {
     @NotNull
     private Long id;
-
     @NotBlank
     private String title;
-
     @Nullable
     private String description;
-
     @NotNull
     private Status status;
+    @NotNull
+    private Long ownerId;
 }
