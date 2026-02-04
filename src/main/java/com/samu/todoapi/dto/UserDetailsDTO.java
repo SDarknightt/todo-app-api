@@ -1,11 +1,9 @@
 package com.samu.todoapi.dto;
 
-import com.samu.todoapi.entity.Role;
+import com.samu.todoapi.entity.Authority;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -14,5 +12,5 @@ public class UserDetailsDTO {
     private Long id;
     private String name;
     private String email;
-    private Role role;
+    private Authority authority;
 }
