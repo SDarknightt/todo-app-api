@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.Map;
 
 import io.jsonwebtoken.Claims;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -36,7 +38,7 @@ public class JwtService {
             .compact();
     }
 
-    private Claims extractAllClaims(String token) {
+    public Claims extractAllClaims(@NotBlank String token) {
         return Jwts.parser()
                     .verifyWith(getSignKey())
                     .build()
@@ -44,11 +46,11 @@ public class JwtService {
                     .getPayload();
     }
 
-    private Boolean isTokenExpired(String token) {
+    public Boolean isTokenExpired(String token) {
         return getTokenExpiration(token).after(new Date());
     }
 
-    private Date getTokenExpiration(String token) {
+    public Date getTokenExpiration(String token) {
         return extractAllClaims(token).getExpiration();
     }
 
