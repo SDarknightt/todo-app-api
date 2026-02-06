@@ -23,6 +23,8 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(request -> request
+                        .requestMatchers("POST","/login").permitAll()
+                        .requestMatchers("POST","/users").permitAll()
                         .requestMatchers("GET","/users/{id}").hasAuthority(Authority.USER.toString())
                         .requestMatchers("GET","/users").hasAuthority(Authority.ADMIN.toString())
                         .anyRequest().authenticated()

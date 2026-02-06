@@ -2,7 +2,6 @@ package com.samu.todoapi.service;
 
 import java.util.List;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,7 +22,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsernameOptional(username)
+        User user = userRepository.findByEmail(username)
                                     .orElseThrow(() -> new UsernameNotFoundException("Usuário " + username + " não encontrado!"));
 
         return new UserAuthenticatedDTO(

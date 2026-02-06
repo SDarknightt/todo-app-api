@@ -19,5 +19,5 @@ public interface UserRepository extends JpaRepository<User, Long>, ListCrudRepos
     @Query("SELECT new com.samu.todoapi.dto.UserDetailsDTO(u.id, u.name, u.email, u.authority) FROM User u WHERE u.id = :id")
     Optional<UserDetailsDTO> findByIdAsDTO(Long id);
 
-    Optional<User> findByUsernameOptional(String username);
+    Optional<User> findByEmail(String username);
 }

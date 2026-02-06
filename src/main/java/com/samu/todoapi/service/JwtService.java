@@ -23,13 +23,13 @@ public class JwtService {
     @Value("${api.security.token.expiration.minutes}")
     private int plusMinutes;
     
-    public String createToken(Map<String, Object> claims, String username) {
+    public String createToken(Map<String, Object> claims, String subject) {
         Instant now = Instant.now();
         Instant expiration = now.plus(plusMinutes, ChronoUnit.MINUTES);
         return Jwts.builder()
             .claims(claims)
             .issuer("JAVA - TODO API")
-            .subject(username)
+            .subject(subject)
             .signWith(getSignKey())
             .issuedAt(Date.from(now))
             .expiration(Date.from(expiration))
