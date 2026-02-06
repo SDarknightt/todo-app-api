@@ -60,6 +60,7 @@ public class UserService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         final User loggedUser = userRepository.findByEmail(authRequest.username())
+                .map()
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado!"));
 
         final Map<String, Object> claims = Map.of("name", loggedUser.getName(),
