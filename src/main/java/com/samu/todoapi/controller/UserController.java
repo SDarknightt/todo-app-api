@@ -1,10 +1,10 @@
 package com.samu.todoapi.controller;
 
 import com.samu.todoapi.dto.UserCreateDTO;
-import com.samu.todoapi.dto.UserDetailsDTO;
+import com.samu.todoapi.dto.UserListDTO;
 import com.samu.todoapi.service.UserService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,14 +28,14 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDetailsDTO> findById(@PathVariable("id") @NotBlank Long id) {
-        UserDetailsDTO user = userService.findById(id);
+    public ResponseEntity<UserListDTO> findById(@PathVariable("id") @NotNull Long id) {
+        UserListDTO user = userService.findById(id);
         return ResponseEntity.ok(user);
     }
 
     @GetMapping
-    public ResponseEntity<List<UserDetailsDTO>> findAll() { // Only ADMIN
-        List<UserDetailsDTO> users = userService.findAll();
+    public ResponseEntity<List<UserListDTO>> findAll() { // Only ADMIN
+        List<UserListDTO> users = userService.findAll();
         return ResponseEntity.ok(users);
     }
 }

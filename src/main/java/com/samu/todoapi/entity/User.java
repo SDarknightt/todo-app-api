@@ -8,6 +8,8 @@ import lombok.*;
 import java.time.Instant;
 import java.util.List;
 
+import org.springframework.security.core.GrantedAuthority;
+
 @Getter
 @Setter
 @Builder
@@ -39,7 +41,7 @@ public class User {
     @Setter(AccessLevel.NONE) // Avoid setter for role
     @Enumerated(EnumType.STRING) // Persiste String não números
     @Column(nullable = false)
-    private Role role = Role.USER;
+    private Authority authority = Authority.USER;
 
     @Column(nullable = false)
     private Instant createdAt;
@@ -51,6 +53,6 @@ public class User {
     private void prePersist() {
         this.createdAt = Instant.now();
         this.enabled = true;
-        this.role = Role.USER;
+        this.authority = Authority.USER;
     }
 }

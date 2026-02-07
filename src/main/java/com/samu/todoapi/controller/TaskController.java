@@ -5,13 +5,16 @@ import com.samu.todoapi.dto.TaskDetailsDTO;
 import com.samu.todoapi.dto.TaskUpdateDTO;
 import com.samu.todoapi.entity.Task;
 import com.samu.todoapi.service.TaskService;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.websocket.server.PathParam;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/tasks")
@@ -30,7 +33,7 @@ public class TaskController {
     }
 
     @PutMapping
-    public ResponseEntity<TaskUpdateDTO> create(@RequestBody @Valid TaskUpdateDTO taskDTO) {
+    public ResponseEntity<TaskUpdateDTO> update(@RequestBody @Valid TaskUpdateDTO taskDTO) {
         TaskUpdateDTO newTask = taskService.update(taskDTO);
         return ResponseEntity.ok().body(newTask);
     }
@@ -42,8 +45,8 @@ public class TaskController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TaskDetailsDTO>> findAll() {
-        List<TaskDetailsDTO> tasks = taskService.findAll();
+    public ResponseEntity<List<TaskDetailsDTO>> findAll(@Nullable @RequestParam Long userId) {
+        List<TaskDetailsDTO> tasks = taskService.findAll(Optional.ofNullable(userId));
         return ResponseEntity.ok().body(tasks);
     }
 

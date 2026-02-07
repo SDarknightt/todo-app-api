@@ -12,6 +12,9 @@ import java.util.Optional;
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
+    @Query("SELECT new com.samu.todoapi.dto.TaskDetailsDTO(t.id, t.title, t.description, t.status, t.owner.id) FROM Task t WHERE t.id = :id AND t.owner.id = :userId")
+    Optional<TaskDetailsDTO> findByIdIfOwnerAsDTO(Long id, Long userId);
+
     @Query("SELECT new com.samu.todoapi.dto.TaskDetailsDTO(t.id, t.title, t.description, t.status, t.owner.id) FROM Task t WHERE t.id = :id")
     Optional<TaskDetailsDTO> findByIdAsDTO(Long id);
 
