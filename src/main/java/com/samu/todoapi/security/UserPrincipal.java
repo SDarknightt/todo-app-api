@@ -1,18 +1,19 @@
-package com.samu.todoapi.dto;
+package com.samu.todoapi.security;
 
 import java.util.Collection;
 import java.util.List;
 
 import com.samu.todoapi.entity.User;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Builder
-public class UserDetailsDTO implements UserDetails {
+public class UserPrincipal implements UserDetails {
     private final User user;
 
-	public UserDetailsDTO(User user) {
+	public UserPrincipal(@NotNull User user) {
 		this.user = user;
 	}
 
@@ -49,5 +50,9 @@ public class UserDetailsDTO implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return true;
+	}
+
+	public User getUser() {
+		return this.user;
 	}
 }

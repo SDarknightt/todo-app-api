@@ -3,21 +3,21 @@ package com.samu.todoapi.repository;
 import java.util.List;
 import java.util.Optional;
 
+import com.samu.todoapi.dto.UserListDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.stereotype.Repository;
 
-import com.samu.todoapi.dto.UserDetailsDTO;
 import com.samu.todoapi.entity.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long>, ListCrudRepository<User, Long> {
-    @Query("SELECT new com.samu.todoapi.dto.UserDetailsDTO(u.id, u.name, u.email, u.authority) FROM User u")
-    List<UserDetailsDTO> findAllUsersAsDTO();
+    @Query("SELECT new com.samu.todoapi.dto.UserListDTO(u.id, u.name, u.email, u.authority) FROM User u")
+    List<UserListDTO> findAllUsersAsDTO();
 
-    @Query("SELECT new com.samu.todoapi.dto.UserDetailsDTO(u.id, u.name, u.email, u.authority) FROM User u WHERE u.id = :id")
-    Optional<UserDetailsDTO> findByIdAsDTO(Long id);
+    @Query("SELECT new com.samu.todoapi.dto.UserListDTO(u.id, u.name, u.email, u.authority) FROM User u WHERE u.id = :id")
+    Optional<UserListDTO> findByIdAsDTO(Long id);
 
-    Optional<User> findByEmail(String username);
+    Optional<User> findByEmailIgnoreCase(String username);
 }

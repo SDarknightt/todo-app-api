@@ -1,4 +1,4 @@
-package com.samu.todoapi.service;
+package com.samu.todoapi.security;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -7,7 +7,6 @@ import java.util.Map;
 
 import io.jsonwebtoken.Claims;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

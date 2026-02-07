@@ -1,12 +1,12 @@
 package com.samu.todoapi.service;
 
-import com.samu.todoapi.dto.AuthRequest;
-import com.samu.todoapi.dto.AuthResponse;
-import com.samu.todoapi.dto.UserCreateDTO;
-import com.samu.todoapi.dto.UserDetailsDTO;
+import com.samu.todoapi.dto.*;
+import com.samu.todoapi.entity.Authority;
 import com.samu.todoapi.entity.User;
 import com.samu.todoapi.mapper.UserMapper;
 import com.samu.todoapi.repository.UserRepository;
+import com.samu.todoapi.security.JwtService;
+import com.samu.todoapi.security.UserPrincipal;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -43,13 +43,19 @@ public class UserService {
         return userMapper.toCreateDTO(newUser);
     }
 
-    public UserDetailsDTO findById(Long id) {
+    public UserListDTO findById(Long id) {
+        User loggedUser = this.getLoggedUser();
+
+        if (loggedUser.getAuthority() != Authority.ADMIN) {
+            id = loggedUser.getId();
+        }
+
         // Validate if logged user.id is the same as id
         return userRepository.findByIdAsDTO(id)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado!"));
     }
 
-    public List<UserDetailsDTO> findAll() { // Only ADMIN
+    public List<UserListDTO> findAll() { // Only ADMIN
         return userRepository.findAllUsersAsDTO();
     }
 
@@ -59,14 +65,24 @@ public class UserService {
         Authentication authentication = authenticationManager.authenticate(authToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        final User loggedUser = userRepository.findByEmail(authRequest.username())
-                .map()
+        final UserPrincipal loggedUser = userRepository.findByEmailIgnoreCase(authRequest.username())
+                .map(UserPrincipal::new)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado!"));
 
-        final Map<String, Object> claims = Map.of("name", loggedUser.getName(),
+        final Map<String, Object> claims = Map.of("name", loggedUser.getUser().getName(),
                                                   "authorities", authentication.getAuthorities());
 
         // TODO: Set user uuid on subject
         return new AuthResponse(jwtService.createToken(claims, authRequest.username()));
+    }
+
+    public User getLoggedUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserPrincipal) {
+            return ((UserPrincipal) principal).getUser();
+        }
+        String username = principal.toString();
+        return this.userRepository.findByEmailIgnoreCase(username)
+                                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado!"));
     }
 }
