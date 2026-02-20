@@ -35,6 +35,8 @@ A API oferece suporte para:
     - Controller – Responsável por lidar com as requisições HTTP.
     - Service – Contém as regras de negócio. 
     - Repository – Responsável pela comunicação com o banco de dados.
+- Containerização com Docker
+  - Garante que a aplicação rode de forma consistente em qualquer ambiente.
 
 ## Como executar o projeto (localmente)
 
@@ -47,6 +49,23 @@ Na raiz do projeto, execute:
 
 ```bash
 ./mvnw spring-boot:run
+```
+
+### Executando com Docker
+
+Na raiz do projeto, execute para gerar o **jar** na pasta **target**:
+```bash
+./mvnw clean package 
+```
+
+Gere uma imagem docker:
+```bash
+docker build -t todo-api:1.0 . 
+```
+
+Rode o container a partir da imagem gerada:
+```bash
+docker run -d --name todo-api -p 8080:8080 todo-api:1.0
 ```
 
 A aplicação será iniciada em:
@@ -65,5 +84,4 @@ Esse token deve ser enviado no header das requisições protegidas:
 - Implementar tratamento global de exceções;
 - Documentação da API com Swagger;
 - Implementação de testes unitários e de integração;
-- Dockerização da aplicação; 
 - Integração com banco de dados persistente (PostgreSQL).
