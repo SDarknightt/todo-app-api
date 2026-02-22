@@ -14,8 +14,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class TaskUpdateDTO {
-    @NotNull
-    private Long id;
     @NotBlank
     private String title;
     @Nullable

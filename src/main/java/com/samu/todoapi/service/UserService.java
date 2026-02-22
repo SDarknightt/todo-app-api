@@ -3,6 +3,7 @@ package com.samu.todoapi.service;
 import com.samu.todoapi.dto.*;
 import com.samu.todoapi.entity.Authority;
 import com.samu.todoapi.entity.User;
+import com.samu.todoapi.exception.NotFoundException;
 import com.samu.todoapi.mapper.UserMapper;
 import com.samu.todoapi.repository.UserRepository;
 import com.samu.todoapi.security.JwtService;
@@ -52,7 +53,7 @@ public class UserService {
 
         // Validate if logged user.id is the same as id
         return userRepository.findByIdAsDTO(id)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado!"));
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado!"));
     }
 
     public List<UserListDTO> findAll() { // Only ADMIN
@@ -67,7 +68,7 @@ public class UserService {
 
         final UserPrincipal loggedUser = userRepository.findByEmailIgnoreCase(authRequest.username())
                 .map(UserPrincipal::new)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado!"));
+                .orElseThrow(() -> new NotFoundException("Usuário não encontrado!"));
 
         final Map<String, Object> claims = Map.of("name", loggedUser.getUser().getName(),
                                                   "authorities", authentication.getAuthorities());
@@ -83,6 +84,6 @@ public class UserService {
         }
         String username = principal.toString();
         return this.userRepository.findByEmailIgnoreCase(username)
-                                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado!"));
+                                    .orElseThrow(() -> new NotFoundException("Usuário não encontrado!"));
     }
 }

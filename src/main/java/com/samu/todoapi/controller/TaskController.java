@@ -3,12 +3,10 @@ package com.samu.todoapi.controller;
 import com.samu.todoapi.dto.TaskCreateDTO;
 import com.samu.todoapi.dto.TaskDetailsDTO;
 import com.samu.todoapi.dto.TaskUpdateDTO;
-import com.samu.todoapi.entity.Task;
 import com.samu.todoapi.service.TaskService;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.websocket.server.PathParam;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,14 +30,14 @@ public class TaskController {
         return ResponseEntity.created(uri).body(newTask);
     }
 
-    @PutMapping
-    public ResponseEntity<TaskUpdateDTO> update(@RequestBody @Valid TaskUpdateDTO taskDTO) {
-        TaskUpdateDTO newTask = taskService.update(taskDTO);
+    @PutMapping("{id}")
+    public ResponseEntity<TaskUpdateDTO> update(@PathVariable @NotNull Long id, @RequestBody @Valid TaskUpdateDTO taskDTO) {
+        TaskUpdateDTO newTask = taskService.update(id, taskDTO);
         return ResponseEntity.ok().body(newTask);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<TaskDetailsDTO> findById(@PathVariable @NotBlank Long id) {
+    public ResponseEntity<TaskDetailsDTO> findById(@PathVariable @NotNull Long id) {
         TaskDetailsDTO tasks = taskService.findById(id);
         return ResponseEntity.ok().body(tasks);
     }

@@ -6,6 +6,8 @@ import com.samu.todoapi.dto.TaskUpdateDTO;
 import com.samu.todoapi.entity.Authority;
 import com.samu.todoapi.entity.Task;
 import com.samu.todoapi.entity.User;
+import com.samu.todoapi.exception.ForbiddenException;
+import com.samu.todoapi.exception.NotFoundException;
 import com.samu.todoapi.mapper.TaskMapper;
 import com.samu.todoapi.repository.TaskRepository;
 import com.samu.todoapi.repository.UserRepository;
@@ -33,7 +35,8 @@ public class TaskService {
     }
 
     public TaskCreateDTO create(TaskCreateDTO taskDTO) {
-       return create(taskDTO, 1L);
+        User loggedUser = userService.getLoggedUser();
+        return create(taskDTO, loggedUser.getId());
     }
 
     public TaskCreateDTO create(TaskCreateDTO taskDTO, Long userId) {
@@ -46,9 +49,15 @@ public class TaskService {
     }
 
     @Transactional
-    public TaskUpdateDTO update(TaskUpdateDTO taskDTO) {
-        Task task = taskRepository.findById(taskDTO.getId())
-                        .orElseThrow(() -> new RuntimeException("Tarefa não encontrada!"));
+    public TaskUpdateDTO update(Long id, TaskUpdateDTO taskDTO) {
+        User loggedUser = userService.getLoggedUser();
+        Task task = taskRepository.findById(id)
+                        .orElseThrow(() -> new NotFoundException("Tarefa não encontrada!"));
+
+        if (!task.getOwner().equals(loggedUser) && (loggedUser.getAuthority() != Authority.ADMIN)) {
+            throw new ForbiddenException();
+        }
+
         task.setTitle(taskDTO.getTitle());
         task.setDescription(taskDTO.getDescription());
         task.setStatus(taskDTO.getStatus());
@@ -60,10 +69,10 @@ public class TaskService {
         User loggedUser = userService.getLoggedUser();
         if (loggedUser.getAuthority() == Authority.ADMIN) {
             return taskRepository.findByIdAsDTO(id)
-                    .orElseThrow(() -> new RuntimeException("Tarefa não encontrada!"));
+                    .orElseThrow(() -> new NotFoundException("Tarefa não encontrada!"));
         }
         return taskRepository.findByIdIfOwnerAsDTO(id, loggedUser.getId())
-                .orElseThrow(() -> new RuntimeException("Tarefa não encontrada!"));
+                .orElseThrow(() -> new NotFoundException("Tarefa não encontrada!"));
     }
 
     public List<TaskDetailsDTO> findAll(Optional<Long> userId) {
@@ -74,11 +83,10 @@ public class TaskService {
             if (loggedUser.getAuthority() == Authority.ADMIN) {
                 id = userId.get();
             } else {
-                throw new RuntimeException("Usuário sem permissão!");
+                throw new ForbiddenException();
             }
         }
 
-        // Depois pegar da sessão do usuário
         return  taskRepository.findAllByUserIdAsDTO(id);
     }
 }
