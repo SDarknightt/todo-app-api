@@ -7,7 +7,9 @@ import lombok.*;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
+import org.hibernate.annotations.UuidGenerator;
 import org.springframework.security.core.GrantedAuthority;
 
 @Getter
@@ -19,9 +21,10 @@ import org.springframework.security.core.GrantedAuthority;
 @AllArgsConstructor
 @Table(name = "users")
 public class User {
-    @Id // Define PK
-    @GeneratedValue(strategy = GenerationType.SEQUENCE) // Define geração da PK
-    private Long id;
+    @Id
+    @GeneratedValue()
+    @UuidGenerator(style = UuidGenerator.Style.TIME)
+    private UUID id;
 
     @Column(nullable = false)
     @NotBlank
@@ -36,7 +39,7 @@ public class User {
 
     @Column(nullable = false)
     @NotNull
-    private boolean enabled;
+    private Boolean enabled;
 
     @Setter(AccessLevel.NONE) // Avoid setter for role
     @Enumerated(EnumType.STRING) // Persiste String não números

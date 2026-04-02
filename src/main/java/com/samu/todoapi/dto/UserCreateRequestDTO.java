@@ -10,8 +10,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @Builder
-public class UserCreateDTO {
-    private Long id;
+public class UserCreateRequestDTO {
     @NotBlank
     private String name;
     @NotBlank

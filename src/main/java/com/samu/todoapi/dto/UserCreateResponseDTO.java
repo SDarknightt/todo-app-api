@@ -1,7 +1,5 @@
 package com.samu.todoapi.dto;
 
-import com.samu.todoapi.entity.Status;
-import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -9,15 +7,17 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @Builder
-public class TaskUpdateDTO {
-    @NotBlank
-    private String title;
-    @Nullable
-    private String description;
+public class UserCreateResponseDTO {
     @NotNull
-    private Status status;
+    private UUID id;
+    @NotBlank
+    private String name;
+    @NotBlank
+    private String email;
 }
