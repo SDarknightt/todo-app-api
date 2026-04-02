@@ -1,8 +1,6 @@
 package com.samu.todoapi.service;
 
-import com.samu.todoapi.dto.TaskCreateDTO;
-import com.samu.todoapi.dto.TaskDetailsDTO;
-import com.samu.todoapi.dto.TaskUpdateDTO;
+import com.samu.todoapi.dto.*;
 import com.samu.todoapi.entity.Authority;
 import com.samu.todoapi.entity.Task;
 import com.samu.todoapi.entity.User;
@@ -15,7 +13,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class TaskService {
@@ -34,27 +32,29 @@ public class TaskService {
         this.userService = userService;
     }
 
-    public TaskCreateDTO create(TaskCreateDTO taskDTO) {
+    @Transactional
+    public TaskCreateResponseDTO create(TaskCreateRequestDTO taskDTO) {
         User loggedUser = userService.getLoggedUser();
-        return create(taskDTO, loggedUser.getId());
+        return createForUser(taskDTO, loggedUser.getId());
     }
 
-    public TaskCreateDTO create(TaskCreateDTO taskDTO, Long userId) {
+    @Transactional
+    public TaskCreateResponseDTO createForUser(TaskCreateRequestDTO taskDTO, UUID userId) {
         User owner = userRepository.getReferenceById(userId);
         Task transientTask = taskMapper.toEntity(taskDTO);
         transientTask.setOwner(owner);
 
         Task newTask = taskRepository.save(transientTask);
-        return taskMapper.toCreateDTO(newTask);
+        return taskMapper.toCreateResponseDTO(newTask);
     }
 
     @Transactional
-    public TaskUpdateDTO update(Long id, TaskUpdateDTO taskDTO) {
+    public TaskUpdateResponseDTO update(UUID id, TaskUpdateRequestDTO taskDTO) {
         User loggedUser = userService.getLoggedUser();
-        Task task = taskRepository.findById(id)
+        Task task = taskRepository.findByIdWithOwner(id)
                         .orElseThrow(() -> new NotFoundException("Tarefa não encontrada!"));
 
-        if (!task.getOwner().equals(loggedUser) && (loggedUser.getAuthority() != Authority.ADMIN)) {
+        if (!task.getOwner().getEmail().equals(loggedUser.getEmail())) {
             throw new ForbiddenException();
         }
 
@@ -62,10 +62,22 @@ public class TaskService {
         task.setDescription(taskDTO.getDescription());
         task.setStatus(taskDTO.getStatus());
 
-        return taskDTO;
+        return taskMapper.toUpdateResponseDTO(task);
     }
 
-    public TaskDetailsDTO findById(Long id) {
+    @Transactional
+    public TaskUpdateResponseDTO updateForUser(UUID id, TaskUpdateRequestDTO taskDTO) {
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Tarefa não encontrada!"));
+
+        task.setTitle(taskDTO.getTitle());
+        task.setDescription(taskDTO.getDescription());
+        task.setStatus(taskDTO.getStatus());
+
+        return taskMapper.toUpdateResponseDTO(task);
+    }
+
+    public TaskDetailsDTO findById(UUID id) {
         User loggedUser = userService.getLoggedUser();
         if (loggedUser.getAuthority() == Authority.ADMIN) {
             return taskRepository.findByIdAsDTO(id)
@@ -75,18 +87,12 @@ public class TaskService {
                 .orElseThrow(() -> new NotFoundException("Tarefa não encontrada!"));
     }
 
-    public List<TaskDetailsDTO> findAll(Optional<Long> userId) {
+    public List<TaskDetailsDTO> findAll() {
         User loggedUser = userService.getLoggedUser();
-        Long id = loggedUser.getId();
+        return  taskRepository.findAllByUserIdAsDTO(loggedUser.getId());
+    }
 
-        if (userId.isPresent()) {
-            if (loggedUser.getAuthority() == Authority.ADMIN) {
-                id = userId.get();
-            } else {
-                throw new ForbiddenException();
-            }
-        }
-
+    public List<TaskDetailsDTO> findAllByUserId(UUID id) {
         return  taskRepository.findAllByUserIdAsDTO(id);
     }
 }

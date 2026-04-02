@@ -8,16 +8,20 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface TaskRepository extends JpaRepository<Task, Long> {
+public interface TaskRepository extends JpaRepository<Task, UUID> {
 
     @Query("SELECT new com.samu.todoapi.dto.TaskDetailsDTO(t.id, t.title, t.description, t.status, t.owner.id) FROM Task t WHERE t.id = :id AND t.owner.id = :userId")
-    Optional<TaskDetailsDTO> findByIdIfOwnerAsDTO(Long id, Long userId);
+    Optional<TaskDetailsDTO> findByIdIfOwnerAsDTO(UUID id, UUID userId);
 
     @Query("SELECT new com.samu.todoapi.dto.TaskDetailsDTO(t.id, t.title, t.description, t.status, t.owner.id) FROM Task t WHERE t.id = :id")
-    Optional<TaskDetailsDTO> findByIdAsDTO(Long id);
+    Optional<TaskDetailsDTO> findByIdAsDTO(UUID id);
 
     @Query("SELECT new com.samu.todoapi.dto.TaskDetailsDTO(t.id, t.title, t.description, t.status, t.owner.id) FROM Task t WHERE t.owner.id = :id")
-    List<TaskDetailsDTO> findAllByUserIdAsDTO(Long id);
+    List<TaskDetailsDTO> findAllByUserIdAsDTO(UUID id);
+
+    @Query("SELECT t FROM Task t JOIN FETCH t.owner WHERE t.id = :id")
+    Optional<Task> findByIdWithOwner(UUID id);
 }
