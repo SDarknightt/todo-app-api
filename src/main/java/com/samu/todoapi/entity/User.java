@@ -9,8 +9,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
-import org.springframework.security.core.GrantedAuthority;
 
 @Getter
 @Setter
@@ -43,8 +43,9 @@ public class User {
 
     @Setter(AccessLevel.NONE) // Avoid setter for role
     @Enumerated(EnumType.STRING) // Persiste String não números
-    @Column(nullable = false)
-    private Authority authority = Authority.USER;
+    @JdbcTypeCode(org.hibernate.type.SqlTypes.NAMED_ENUM) // Hibernate faz cast para primitivo do banco
+    @Column(nullable = false, columnDefinition = "user_role")
+    private Authority authority;
 
     @Column(nullable = false)
     private Instant createdAt;
