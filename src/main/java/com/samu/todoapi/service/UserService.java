@@ -1,7 +1,6 @@
 package com.samu.todoapi.service;
 
 import com.samu.todoapi.dto.*;
-import com.samu.todoapi.entity.Authority;
 import com.samu.todoapi.entity.User;
 import com.samu.todoapi.exception.NotFoundException;
 import com.samu.todoapi.mapper.UserMapper;
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -38,25 +38,23 @@ public class UserService {
         this.jwtService = jwtService;
     }
 
-    public UserCreateDTO create(UserCreateDTO userDTO) {
+    public UserCreateResponseDTO create(UserCreateRequestDTO userDTO) {
         userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         User newUser = userRepository.save(userMapper.toEntity(userDTO));
-        return userMapper.toCreateDTO(newUser);
+        return userMapper.toCreateResponseDTO(newUser);
     }
 
-    public UserListDTO findById(Long id) {
+    public UserDetailsDTO getUserInfo() {
         User loggedUser = this.getLoggedUser();
+        return this.findById(loggedUser.getId());
+    }
 
-        if (loggedUser.getAuthority() != Authority.ADMIN) {
-            id = loggedUser.getId();
-        }
-
-        // Validate if logged user.id is the same as id
+    public UserDetailsDTO findById(UUID id) {
         return userRepository.findByIdAsDTO(id)
                 .orElseThrow(() -> new NotFoundException("Usuário não encontrado!"));
     }
 
-    public List<UserListDTO> findAll() { // Only ADMIN
+    public List<UserDetailsDTO> findAll() { // Only ADMIN
         return userRepository.findAllUsersAsDTO();
     }
 

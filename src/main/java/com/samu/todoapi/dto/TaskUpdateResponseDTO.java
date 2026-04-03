@@ -4,6 +4,7 @@ import com.samu.todoapi.entity.Status;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,7 +13,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @AllArgsConstructor
-public class TaskDetailsDTO {
+@Builder
+public class TaskUpdateResponseDTO {
     @NotNull
     private UUID id;
     @NotBlank
@@ -20,6 +22,4 @@ public class TaskDetailsDTO {
     private String description;
     @NotNull
     private Status status;
-    @NotNull
-    private UUID ownerId;
 }
