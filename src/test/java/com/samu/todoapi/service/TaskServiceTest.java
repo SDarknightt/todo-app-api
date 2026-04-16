@@ -9,18 +9,18 @@ import com.samu.todoapi.entity.User;
 import com.samu.todoapi.mapper.TaskMapper;
 import com.samu.todoapi.repository.TaskRepository;
 import com.samu.todoapi.repository.UserRepository;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,6 +34,7 @@ public class TaskServiceTest {
     @Mock
     private UserService userService;
 
+    @Spy // Objeto é gerenciado pelo Mockito, vira mock mas com implementação real e podendo ser alterado
     private final TaskMapper taskMapper = new TaskMapper();
 
     @InjectMocks
@@ -57,16 +58,16 @@ public class TaskServiceTest {
         when(userRepository.getReferenceById(user.getId()))
                 .thenReturn(user);
 
-        ArgumentCaptor<Task> captor = ArgumentCaptor.forClass(Task.class);
-        verify(taskRepository).save(captor.capture());
-        Task task = captor.getValue();
-
-        when(taskRepository.save(task)).thenReturn(task);
+        // thenAnswer captura o elemento durante a execução do método e permite manipular antes de retornar
+        when(taskRepository.save(any(Task.class))).thenAnswer(invocation -> {
+            var task = invocation.getArgument(0, Task.class);
+            task.setId(UUID.randomUUID());
+            return task;
+        });
 
         TaskCreateResponseDTO taskCreatedDTO = taskService.createForUser(taskDTO, user.getId());
-        assertEquals(task.getId(), taskCreatedDTO.getId());
+        assertNotNull(taskCreatedDTO.getId());
+        assertEquals(taskDTO.getTitle(), taskCreatedDTO.getTitle());
     }
-
-
 
 }
